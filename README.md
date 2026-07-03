@@ -479,3 +479,5 @@ minikube status
 minikube start
 kubectl cluster-info
 ```
+# for more info please checkout the .md file named
+Kubernetes Calico CNI Demo Project.md
