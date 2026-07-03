@@ -1,0 +1,30 @@
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: advanced-frontend-policy
+  namespace: calico-demo
+spec:
+  selector: app == "frontend"
+  types:
+  - Egress
+  egress:
+  # Allow to backend
+  - action: Allow
+    protocol: TCP
+    destination:
+      selector: app == "backend"
+      ports:
+      - 8080
+  # Allow DNS
+  - action: Allow
+    protocol: UDP
+    destination:
+      ports:
+      - 53
+  # Log and deny everything else
+  - action: Log
+  - action: Deny
+# after it please apply
+
+kubectl apply -f 04-calico-policy.yaml
+

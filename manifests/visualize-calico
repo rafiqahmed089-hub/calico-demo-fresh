@@ -1,0 +1,11 @@
+# View network policies
+kubectl describe networkpolicy -n calico-demo
+
+# View Calico workload endpoints
+calicoctl get workloadendpoint -n calico-demo
+
+# View IP assignments
+kubectl get pods -n calico-demo -o wide
+
+# Check Calico node status
+calicoctl node status

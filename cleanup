@@ -1,0 +1,5 @@
+# Delete namespace (removes all resources)
+kubectl delete namespace calico-demo
+
+# Or delete Minikube entirely
+minikube delete

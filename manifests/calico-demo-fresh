@@ -1,0 +1,54 @@
+cat > README.md <<'EOF'
+# Calico CNI Network Policy Demo
+
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28+-blue.svg)](https://kubernetes.io/)
+[![Calico](https://img.shields.io/badge/Calico-v3.26-orange.svg)](https://www.projectcalico.org/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+A comprehensive hands-on demonstration of Calico CNI network policies in Kubernetes, implementing a zero-trust security model for a 3-tier application.
+
+## 🎯 Overview
+
+This project demonstrates how to:
+- Install and configure Calico CNI in Kubernetes
+- Implement network segmentation using NetworkPolicies
+- Apply zero-trust security principles
+- Test and validate network policies
+- Monitor and troubleshoot network connectivity
+
+## 🏗️ Architecture
+┌──────────────────────────────────────────────┐
+│          Calico CNI Network Layer            │
+└──────────────────────────────────────────────┘
+│
+┌─────────────┼─────────────┐
+│             │             │
+┌───▼────┐   ┌────▼────┐   ┌────▼─────┐
+│Frontend│   │ Backend │   │ Database │
+│ nginx  │──►│http-echo│──►│  redis   │
+│  :80   │   │  :8080  │   │  :6379   │
+└────────┘   └─────────┘   └──────────┘
+✅            ✅             ❌
+ALLOWED      ALLOWED       BLOCKED
+
+### Traffic Flow
+- ✅ **Frontend → Backend**: Allowed on port 8080
+- ✅ **Backend → Database**: Allowed on port 6379
+- ❌ **Frontend → Database**: Blocked by network policy
+- ✅ **All → DNS**: Allowed for service discovery
+
+## 📋 Prerequisites
+
+- **Minikube** v1.25+ or any Kubernetes cluster
+- **kubectl** v1.28+
+- **Docker** (for Minikube driver)
+- **Git** (for cloning repository)
+- Minimum: 2 CPU cores, 4GB RAM
+
+## 🚀 Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/rafiqahmed089-hub/calico-demo-fresh.git
+cd calico-demo-fresh

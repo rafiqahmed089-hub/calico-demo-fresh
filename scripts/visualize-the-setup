@@ -1,0 +1,10 @@
+echo "=== Current Network Architecture ==="
+echo ""
+echo "Pods and their IPs:"
+kubectl get pods -n calico-demo -o wide
+echo ""
+echo "Services:"
+kubectl get svc -n calico-demo
+echo ""
+echo "Network Policies:"
+kubectl get networkpolicies -n calico-demo
