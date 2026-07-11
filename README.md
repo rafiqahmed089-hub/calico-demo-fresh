@@ -481,3 +481,72 @@ kubectl cluster-info
 ```
 # for more info please checkout the .md file named
 Kubernetes Calico CNI Demo Project.md
+
+### Remove Kubernetes cluster where Using calico
+
+# Delete Calico via manifest (if installed this way)
+kubectl delete -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+
+# OR if installed via Tigera operator
+kubectl delete -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/tigera-operator.yaml
+kubectl delete installation default
+
+# OR if installed via Helm
+helm uninstall calico -n tigera-operator
+
+
+### Clean up leftover Calico resources
+
+kubectl delete crd -l app.kubernetes.io/name=calico --ignore-not-found
+kubectl get crd | grep -i calico | awk '{print $1}' | xargs kubectl delete crd
+kubectl delete namespace calico-system calico-apiserver tigera-operator --ignore-not-found
+.......................
+sudo ip link delete cali0 2>/dev/null
+sudo ip link delete tunl0 2>/dev/null
+sudo ip link delete vxlan.calico 2>/dev/null
+sudo rm -rf /etc/cni/net.d/10-calico.conflist
+sudo rm -rf /etc/cni/net.d/calico-kubeconfig
+sudo rm -rf /var/lib/calico
+### Part 2: Fully Delete the Entire Kubernetes Cluster
+
+kubectl drain <node-name> --delete-emptydir-data --force --ignore-daemonsets
+kubectl delete node <node-name>
+
+### Step 2 — On every node (master + workers): reset kubeadm
+
+sudo kubeadm reset -f
+## Step 3 — Clean up remaining files/directories on every node
+sudo rm -rf /etc/cni/net.d
+sudo rm -rf /etc/kubernetes
+sudo rm -rf /var/lib/etcd
+sudo rm -rf /var/lib/kubelet
+sudo rm -rf $HOME/.kube
+sudo rm -rf /var/lib/cni/
+sudo rm -rf /opt/cni/bin
+### Step 4 — Clean up iptables rules (created by kube-proxy/Calico)
+sudo iptables -F
+sudo iptables -t nat -F
+sudo iptables -t mangle -F
+sudo iptables -X
+
+sudo ipvsadm --clear 2>/dev/null   # if using IPVS mode
+
+### Step 5 — Remove leftover network interfaces
+
+sudo ip link delete cni0 2>/dev/null
+sudo ip link delete flannel.1 2>/dev/null
+sudo ip link delete cali0 2>/dev/null
+sudo ip link delete tunl0 2>/dev/null
+sudo ip link delete vxlan.calico 2>/dev/null
+sudo ip link delete kube-ipvs0 2>/dev/null
+### Step 6 — (Optional) Uninstall packages entirely
+
+
+sudo apt-get purge -y kubeadm kubectl kubelet kubernetes-cni
+sudo apt-get autoremove -y
+
+
+### Step 7 — Reboot nodes (recommended)
+sudo reboot
+
+
